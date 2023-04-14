@@ -1,9 +1,12 @@
 const CHAT = "CHAT";
 const NEW_RESPONSE = "NEW_RESPONSE";
-const CG_CLASS = "relative h-[30px] w-[30px] p-1 rounded-sm text-white flex items-center justify-center";
+const CG_CLASS = ".relative.h-\\[30px\\].w-\\[30px\\].p-1.rounded-sm.text-white.flex.items-center.justify-center";
 const CODE = "Copy code";
 const OG_COLOR = "rgb(16, 163, 127)";
 const COPY_BUTTON = "rgb(239, 92, 128)";
+const BULLET = "•";
+const UL = "UL";
+const CHECK_AFTER = 100;
 
 (() => {
 
@@ -24,18 +27,18 @@ const COPY_BUTTON = "rgb(239, 92, 128)";
     const waitForChats = () => {
         return new Promise((resolve) => {
             const check = () => {
-                const allResponses = document.getElementsByClassName(CG_CLASS);
+                const allResponses = document.querySelectorAll(CG_CLASS);
                 if (allResponses.length > 0) {
                     resolve(allResponses);
                 } else {
-                    setTimeout(check, 100);
+                    setTimeout(check, CHECK_AFTER);
                 }
             };
             check();
         });
     };
 
-    const addCopyButton  = (response) => {
+    const addCopyButton = (response) => {
         let child = response.firstChild;
         let grandChild = child.firstChild;
 
@@ -48,12 +51,14 @@ const COPY_BUTTON = "rgb(239, 92, 128)";
             contents.forEach(section => {
                 if (section instanceof HTMLParagraphElement) {
                     copyText += section.textContent + "\n";
-                } else if (section.childElementCount > 0) {
-                    section.childNodes.forEach(subsec => {
-                        copyText += subsec.textContent + "\n";
-                    });
                 } else if (section.textContent.includes(CODE)) {
                     copyText += section.textContent.split(CODE)[1] + "\n";
+                } else if (section.childElementCount > 0) {
+                    for (let i = 0; i < section.childElementCount; i++) {
+                        let subsec = section.childNodes[i];
+                        let contribution = `${(section.tagName === UL ? BULLET : (i + 1) + ".")}\t${subsec.textContent} \n`;
+                        copyText += contribution;
+                    }
                 }
             });
             navigator.clipboard.writeText(copyText)
