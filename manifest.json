@@ -2,7 +2,10 @@
     "name": "ChatGPT-adhoc",
     "version": "0.1.0",
     "description": "Provides simple features like copy functionality for text responses",
-    "permissions": ["tabs"],
+    "permissions": [
+      "tabs",
+      "webRequest"
+    ],
     "host_permissions": ["https://*.chat.openai.com/*"],
     "background": {
       "service_worker": "background.js"
