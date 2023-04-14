@@ -29,29 +29,20 @@ const COPY_BUTTON = "rgb(239, 92, 128)";
             check();
         });
     };
-    
-    const waitForElement = (element) => {
-        return new Promise((resolve) => {
-            const check = () => {
-                if (typeof element !== 'undefined') {
-                    resolve(element);
-                } else {
-                    setTimeout(check, 100);
-                }
-            };
-            check();
-        });
-    };
 
     const newChatLoaded = () => {
         waitForChats().then((allResponses) => {
-            let response = allResponses[allResponses.length - 1];
-            let child = response.firstChild;
-            // copy-text
-            response.addEventListener("click", (e) => {
-                waitForElement(e.target.parentNode.parentNode.parentNode.childNodes[1].childNodes[0].childNodes[0].childNodes[0].childNodes)
-                .then((contents) => {
+            for(let i = allResponses.length - 1; i >= 0; i--){
+                let response = allResponses[i];
+                let child = response.firstChild;
+                let grandChild = child.firstChild;
+                
+                // copy-text
+                response.addEventListener("click", (e) => {
+                    let contents = response.parentNode.parentNode.childNodes[1].childNodes[0].childNodes[0].childNodes[0].childNodes;
                     let copyText = "";
+                    
+                    // copy each section
                     contents.forEach(section => {
                         if(section instanceof HTMLParagraphElement){
                             copyText += section.textContent + "\n";
@@ -63,27 +54,29 @@ const COPY_BUTTON = "rgb(239, 92, 128)";
                     .then(() => {console.log("text copied!");})
                     .catch((err) => {console.log("failed to copy", err)});
                     
-                    // copy-blink
-                    child.firstChild.setAttribute("fill", "black");
+                    // copied-blink
+                    grandChild.setAttribute("fill", "black");
                     setTimeout(() => {
-                        child.firstChild.setAttribute("fill", "currentColor");
+                        grandChild.setAttribute("fill", "currentColor");
                     }, 100);
-
                 });
-            });
-            // hover-effects
-            response.addEventListener("mouseover", (e) => {
-                response.style.backgroundColor = COPY_BUTTON;
-                child.style.backgroundColor = COPY_BUTTON;
-            });
-            child.addEventListener("mouseover", (e) => {
-                child.style.backgroundColor = COPY_BUTTON;
-                response.style.backgroundColor = COPY_BUTTON;
-            });
-            response.addEventListener("mouseout", (e) => {
-                response.style.backgroundColor = OG_COLOR;
-                child.style.backgroundColor = OG_COLOR;
-            });
+                
+                // hover-effects
+                response.addEventListener("mouseover", (e) => {
+                    response.style.backgroundColor = COPY_BUTTON;
+                    child.style.backgroundColor = COPY_BUTTON;
+                });
+                child.addEventListener("mouseover", (e) => {
+                    child.style.backgroundColor = COPY_BUTTON;
+                    response.style.backgroundColor = COPY_BUTTON;
+                });
+                response.addEventListener("mouseout", (e) => {
+                    response.style.backgroundColor = OG_COLOR;
+                    child.style.backgroundColor = OG_COLOR;
+                });
+
+            }
+            
         });
     };
 
