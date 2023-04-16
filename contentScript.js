@@ -10,6 +10,7 @@ const CHECK_AFTER = 100;
 const WAIT_FOR_INPUT = 3000;
 const UP = 38;
 const DOWN = 40;
+const ENTER = 13;
 
 const CG_CLASS = "div.rounded-sm";
 const P_CLASS = "img.rounded-sm";
@@ -24,6 +25,8 @@ const BORDER_RADIUS = "0.5rem";
     let currentChat = "";
 
     let input = undefined;
+    let submitButton = undefined;
+
     let allPromptImages = [];
     let allPromptTexts = [];
     let promptsIndex = 0;
@@ -137,7 +140,7 @@ const BORDER_RADIUS = "0.5rem";
         let promptImage = allPromptImages[index].parentNode.parentNode;
         let temp = promptImage.parentNode.parentNode.childNodes[1].firstChild;
         allPromptTexts.unshift(temp);
-        
+
         promptImage.addEventListener("click", () => {
             promptsIndex = index;
             input.value = temp.textContent;
@@ -157,6 +160,8 @@ const BORDER_RADIUS = "0.5rem";
     const setInputEventListener = () => {
         setTimeout(() => {
             input = document.querySelector(INPUT);
+            submitButton = input.parentNode.childNodes[1];
+
             input.addEventListener("keydown", (e) => {
                 if (e.altKey) {
                     e.preventDefault();
@@ -173,6 +178,10 @@ const BORDER_RADIUS = "0.5rem";
                             input.value = allPromptTexts[promptsIndex].textContent;
                         }
                     }
+                }
+                if (e.keyCode === ENTER && input.value.length > 0) {
+                    e.preventDefault();
+                    submitButton.click();
                 }
                 if (promptsIndex !== totalPromptsCount) {
                     markPrompt(promptsIndex, 2);
@@ -204,6 +213,15 @@ const BORDER_RADIUS = "0.5rem";
             promptsIndex = totalPromptsCount;
             for (let i = totalPromptsCount - 1; i >= 0; i--) {
                 addPromptReuseButton(i);
+            }
+        });
+
+        document.addEventListener("keypress", (e) => {
+            if (e.key === '/') {
+                if (document.activeElement !== input) {
+                    e.preventDefault();
+                    input.focus();
+                }
             }
         });
 
